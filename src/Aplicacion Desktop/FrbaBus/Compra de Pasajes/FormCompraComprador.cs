@@ -303,10 +303,10 @@ namespace FrbaBus.Compra_de_Pasajes
         {
             Boolean errores = false;
             Regex reg = new Regex(@"^[a-zA-Z0-9ñáéíóú]{1,30}$");
-            Regex regApellido = new Regex(@"^[A-ZÑÁÉÍÓÚ]{1}[a-zñáéíóú]{1,30}$");
-            Regex regNombre = new Regex(@"^[A-ZÑÁÉÍÓÚ]{1,30}$");
+            Regex regApellido = new Regex(@"^[A-ZÑÁÉÍÓÚ\s]{1}[a-zñáéíóú]{1,30}$");
+            Regex regNombre = new Regex(@"^[A-ZÑÁÉÍÓÚ\s]{1,30}$");
             Regex regDir = new Regex(@"^[a-zA-Zñáéíóú\s]+([0-9]){1,6}$");
-            Regex regMail = new Regex(@"^[a-zA-Z0-9._-ñáéíóú]+@[a-zA-Z0-9._-ñáéíóú]+\.[a-zA-Zñáéíóú]{2,4}$");
+            Regex regMail = new Regex(@"^[a-zA-Z0-9._ñáéíóú]+@[a-zA-Z0-9._-ñáéíóú]+\.[a-zA-Zñáéíóú]{2,4}$");
             long result;
 
             this.errorProviderDNI.Clear();

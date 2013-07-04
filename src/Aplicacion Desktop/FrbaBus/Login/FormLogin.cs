@@ -46,6 +46,7 @@ namespace FrbaBus.Login
                 {
                     this.darAcceso(usuario.rol.ID);
                     UsuarioLogueado.usuario = usuario;
+                    Aplicacion.resetearIntentosFallidos();
                     mensaje.mostrarNormal("Acceso autorizado.\nBienvenido a FRBA Bus.");
                     this.Close();
                 }
@@ -53,7 +54,19 @@ namespace FrbaBus.Login
                 {
                     this.quitarAcceso();
                     UsuarioLogueado.usuario = null;
-                    mensaje.mostrarNormal("Usuario y password no válidos.");
+                    Aplicacion.aumentarIntentosFallidos();
+
+                    if (Aplicacion.getIntentosFallidos() < 3)
+                    {
+                        mensaje.mostrarNormal("Usuario y password no válidos.");
+                    }
+                    else
+                    {
+                        this.Close();
+                        this.formPrincipal.inhabilitarLogin();
+                        throw new SystemException("Ha superado los 3 intentos de Login. Ésta funcionalidad será deshabilitada por seguridad.");
+                    }
+
                 }
 
             }
@@ -153,7 +166,19 @@ namespace FrbaBus.Login
 
             if (errores)
             {
-                throw new SystemException("Se ha producido un error con sus credenciales de acceso. Por favor, corrija los errores.");
+                Aplicacion.aumentarIntentosFallidos();
+
+                if (Aplicacion.getIntentosFallidos() < 3)
+                {
+                    throw new SystemException("Se ha producido un error con sus credenciales de acceso. Por favor, corrija los errores.");
+                }
+                else
+                {
+                    this.Close();
+                    this.formPrincipal.inhabilitarLogin();
+                    throw new SystemException("Ha superado los 3 intentos de Login. Ésta funcionalidad será deshabilitada por seguridad.");
+                }
+                
             }
         }
 

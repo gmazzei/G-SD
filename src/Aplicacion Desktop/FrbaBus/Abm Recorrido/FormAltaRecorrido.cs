@@ -115,12 +115,13 @@ namespace FrbaBus.Abm_Recorrido
 
             this.errorProviderCodigo.Clear();
             this.errorProviderDestino.Clear();
+            this.errorProviderCiudades.Clear();
             this.errorProviderHabilitado.Clear();
             this.errorProviderKg.Clear();
             this.errorProviderOrigen.Clear();
             this.errorProviderPasaje.Clear();
             this.errorProviderServicio.Clear();
-           
+            
             //Codigo
             if (String.IsNullOrEmpty(tb_Codigo.Text))
             {
@@ -178,6 +179,11 @@ namespace FrbaBus.Abm_Recorrido
                 errores = true;
             }
 
+            if ((!String.IsNullOrEmpty(tb_CiudadOrigen.Text)) && (!String.IsNullOrEmpty(tb_CiudadDestino.Text)) && tb_CiudadOrigen.Text.Equals(tb_CiudadDestino.Text))
+            {
+                errorProviderCiudades.SetError(tb_CiudadOrigen, "No se puede ingresar la misma ciudad para el origen y el destino");
+                errores = true;
+            }
 
             if (errores)
             {

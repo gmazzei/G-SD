@@ -139,6 +139,7 @@ namespace FrbaBus.Dao
                 cliente.telefono = reader["telefono"].ToString();
                 cliente.fechaNacimiento = Convert.ToDateTime(reader["fechaNacimiento"]);
                 cliente.esDiscapacitado = (String)reader["esDiscapacitado"];
+                
                 if (!reader.IsDBNull(6))
                 {
                     cliente.mail = (String)reader["mail"];
@@ -175,13 +176,17 @@ namespace FrbaBus.Dao
             {
                 cliente.mail = "NULL";
             }
+            else 
+            {
+                cliente.mail = "'" + cliente.mail +"'";
+            }
             
 
             String sql;
             sql = "EXEC SENIOR_DEVELOPERS.SP_insertarOActualizarCliente ";
             sql += "@DNI = "+ dniAnteriorCliente +", @nuevoDNI = "+ cliente.dni +", @nombre = '"+ cliente.nombre +"', @apellido = '"+ cliente.apellido +"', ";
             sql += "@direccion = '"+ cliente.direccion +"', @fechaNacimiento = '"+cliente.fechaNacimiento.ToString("yyyy-MM-dd hh:mm:ss")+"', ";
-            sql += "@mail = '"+ cliente.mail +"', @genero = '"+ cliente.genero +"', @esDiscapacitado = '"+ cliente.esDiscapacitado +"', @telefono = " + cliente.telefono;
+            sql += "@mail = "+ cliente.mail +", @genero = '"+ cliente.genero +"', @esDiscapacitado = '"+ cliente.esDiscapacitado +"', @telefono = " + cliente.telefono;
 
             db.executeNonQuery(sql);
         }

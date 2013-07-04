@@ -100,6 +100,15 @@ namespace FrbaBus
             formRegistroLlegada.Show();
         }
 
+        private void FormPrincipal_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        public void inhabilitarLogin()
+        {
+            this.botonLogin.Visible = false;
+        }
 
 
 

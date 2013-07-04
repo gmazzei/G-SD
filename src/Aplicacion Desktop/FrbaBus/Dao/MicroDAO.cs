@@ -103,7 +103,7 @@ namespace FrbaBus.Dao
         {
             BaseDeDatos db = BaseDeDatos.Instance;
             String sql;
-
+            /*
             sql = "SELECT TOP 5 Micro, SUM([Cantidad de dias fuera de servicio]) AS 'Total de dias fuera de servicio' ";
             sql += "FROM SENIOR_DEVELOPERS.V_MicrosDiasFueraDeServicio ";
             sql += "WHERE ";
@@ -111,7 +111,9 @@ namespace FrbaBus.Dao
             sql += "AND SENIOR_DEVELOPERS.FN_fechaEsDeSemestre(fecha) = " + semestre + " ";
             sql += "GROUP BY Micro ";
             sql += "ORDER BY 'Total de dias fuera de servicio' ASC";
-            
+            */
+
+            sql = "SELECT Micro, Dias from SENIOR_DEVELOPERS.FN_ListadoMicrosFueraServicio(" + anio + ", " + semestre + ")";
             
             DataTable tabla = db.obtenerComoTabla(sql);
 

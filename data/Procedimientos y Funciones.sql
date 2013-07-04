@@ -1,5 +1,8 @@
 /*Procedimientos y Funciones*/
 
+
+IF OBJECT_ID('SENIOR_DEVELOPERS.FN_ListadoMicrosFueraServicio') IS NOT NULL
+  DROP FUNCTION SENIOR_DEVELOPERS.FN_ListadoMicrosFueraServicio
 IF OBJECT_ID('SENIOR_DEVELOPERS.SP_modificarRecorrido') IS NOT NULL
   DROP PROCEDURE SENIOR_DEVELOPERS.SP_modificarRecorrido
 IF OBJECT_ID('SENIOR_DEVELOPERS.SP_modificarRol') IS NOT NULL
@@ -867,3 +870,54 @@ begin
 end
 GO
 
+
+create function SENIOR_DEVELOPERS.FN_ListadoMicrosFueraServicio(@anio int, @semestre int) 
+returns @resultado table (Micro nvarchar(255), Dias int) as
+begin
+
+	declare @microsFueraServicio table (patente nvarchar(255), fecha date, fechaReinicio date)
+	
+	declare @fechaLimiteInferior date
+	declare @fechaLimiteSuperior date
+	
+	if(@semestre = 1)
+	begin
+		select @fechaLimiteInferior = CONVERT(date, CONVERT(char(4), @anio) + '-01-01')
+		select @fechaLimiteSuperior = CONVERT(date, CONVERT(char(4), @anio) + '-06-30')
+	end
+	else 
+	begin
+		select @fechaLimiteInferior = CONVERT(date, CONVERT(char(4), @anio) + '-07-01')
+		select @fechaLimiteSuperior = CONVERT(date, CONVERT(char(4), @anio) + '-12-31')
+	end
+	
+	
+	insert into @microsFueraServicio
+	(patente, fecha, fechaReinicio)
+	select micro_patente, fecha, fechaReinicio 
+	from SENIOR_DEVELOPERS.RegistroMicroFueraServicio
+	where 
+	(fecha between @fechaLimiteInferior AND @fechaLimiteSuperior) OR
+	(fechaReinicio between @fechaLimiteInferior AND @fechaLimiteSuperior)
+	
+	
+	
+	update @microsFueraServicio
+	set fecha = @fechaLimiteInferior
+	where fecha < @fechaLimiteInferior
+	
+	update @microsFueraServicio
+	set fechaReinicio = @fechaLimiteSuperior
+	where fechaReinicio > @fechaLimiteSuperior
+	
+	insert into @resultado
+	(Micro, Dias)
+	select top 5 patente, SUM(DATEDIFF(DAY, fecha, fechaReinicio))
+	from @microsFueraServicio
+	group by patente
+	order by 2 DESC
+	
+	return
+	
+end
+GO

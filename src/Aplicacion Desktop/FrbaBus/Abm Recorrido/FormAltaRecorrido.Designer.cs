@@ -55,6 +55,7 @@
             this.botonCiudadOrigen = new System.Windows.Forms.Button();
             this.botonCiudadDestino = new System.Windows.Forms.Button();
             this.tb_CiudadDestino = new System.Windows.Forms.TextBox();
+            this.errorProviderCiudades = new System.Windows.Forms.ErrorProvider(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.errorProviderCodigo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProviderServicio)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProviderOrigen)).BeginInit();
@@ -62,6 +63,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.errorProviderPasaje)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProviderKg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProviderHabilitado)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProviderCiudades)).BeginInit();
             this.SuspendLayout();
             // 
             // lb_Codigo
@@ -260,6 +262,10 @@
             this.tb_CiudadDestino.Size = new System.Drawing.Size(131, 20);
             this.tb_CiudadDestino.TabIndex = 19;
             // 
+            // errorProviderCiudades
+            // 
+            this.errorProviderCiudades.ContainerControl = this;
+            // 
             // FormAltaRecorrido
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -294,6 +300,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.errorProviderPasaje)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProviderKg)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProviderHabilitado)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProviderCiudades)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -327,5 +334,6 @@
         protected System.Windows.Forms.TextBox tb_CiudadOrigen;
         protected System.Windows.Forms.Button botonCiudadDestino;
         protected System.Windows.Forms.TextBox tb_CiudadDestino;
+        protected System.Windows.Forms.ErrorProvider errorProviderCiudades;
     }
 }

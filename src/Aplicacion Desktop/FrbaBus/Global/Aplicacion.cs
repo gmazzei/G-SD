@@ -12,6 +12,8 @@ namespace FrbaBus.Global
         private Aplicacion()
         { }
 
+        private static int cantidadIntentosLogin = 0;
+
         public static DateTime getFecha()
         {
 
@@ -21,5 +23,19 @@ namespace FrbaBus.Global
             return fecha;
         }
         
+        public static void aumentarIntentosFallidos()
+        {
+            cantidadIntentosLogin++;
+        }
+
+        public static int getIntentosFallidos()
+        {
+            return cantidadIntentosLogin;
+        }
+
+        public static void resetearIntentosFallidos()
+        {
+            cantidadIntentosLogin = 0;
+        }
     }
 }

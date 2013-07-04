@@ -517,6 +517,21 @@ BEGIN
 END
 GO
 
+/*Si un micro pasa a estar fuera de servicio*/
+create trigger tr_microFueraServicio on SENIOR_DEVELOPERS.Micro
+for update as
+begin
+	
+	insert into SENIOR_DEVELOPERS.RegistroMicroFueraServicio
+	(micro_patente, fecha, fechaReinicio)
+	select patente, fechaFueraServicio, fechaReinicioServicio from inserted
+	where fechaFueraServicio IS NOT NULL AND fechaReinicioServicio IS NOT NULL
+	AND fechaFueraServicio not in (select fecha from SENIOR_DEVELOPERS.RegistroMicroFueraServicio where micro_patente = patente)
+	
+end
+GO
+
+
 --Migracion de datos
 
 
