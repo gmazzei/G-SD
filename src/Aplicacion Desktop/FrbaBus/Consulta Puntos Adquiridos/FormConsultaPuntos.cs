@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using FrbaBus.Dao;
 using FrbaBus.Mensajes;
+using System.Text.RegularExpressions;
 
 namespace FrbaBus.Consulta_Puntos_Adquiridos
 {
@@ -44,16 +45,31 @@ namespace FrbaBus.Consulta_Puntos_Adquiridos
         }
 
         private void validarEntrada()
-        { 
-            if(String.IsNullOrEmpty(tb_DNI.Text))
+        {
+            Boolean errores = false;
+            Regex regex = new Regex(@"^[0-9]{1,10}$");
+            String dni = tb_DNI.Text;
+
+            this.errorProviderDNI.Clear();
+
+            if(String.IsNullOrEmpty(dni))
             {
-                throw new SystemException("Debe ingresar un DNI para ver los puntos.");
+                errorProviderDNI.SetError(tb_DNI, "Campo obligatorio");
+            }
+            else if (!regex.IsMatch(dni))
+            {
+                errorProviderDNI.SetError(tb_DNI, "Solo pueden ser números (máximo 10 dígitos)");
+            }
+
+            if (errores)
+            {
+                throw new SystemException("Debe corregir los errores para ver los puntos.");
             }
         }
 
         private void FormConsultaPuntos_Load(object sender, EventArgs e)
         {
-
+            //Nada
         }
         
 

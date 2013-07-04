@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.lb_DNI = new System.Windows.Forms.Label();
             this.lb_Puntos = new System.Windows.Forms.Label();
             this.lb_CantidadPuntos = new System.Windows.Forms.Label();
@@ -38,8 +39,10 @@
             this.botonCancelar = new System.Windows.Forms.Button();
             this.dataGridRegistro = new System.Windows.Forms.DataGridView();
             this.dataGridCanjes = new System.Windows.Forms.DataGridView();
+            this.errorProviderDNI = new System.Windows.Forms.ErrorProvider(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridRegistro)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridCanjes)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProviderDNI)).BeginInit();
             this.SuspendLayout();
             // 
             // lb_DNI
@@ -136,6 +139,10 @@
             this.dataGridCanjes.Size = new System.Drawing.Size(317, 150);
             this.dataGridCanjes.TabIndex = 11;
             // 
+            // errorProviderDNI
+            // 
+            this.errorProviderDNI.ContainerControl = this;
+            // 
             // FormConsultaPuntos
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -156,6 +163,7 @@
             this.Load += new System.EventHandler(this.FormConsultaPuntos_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridRegistro)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridCanjes)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProviderDNI)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -173,5 +181,6 @@
         private System.Windows.Forms.Button botonCancelar;
         private System.Windows.Forms.DataGridView dataGridRegistro;
         private System.Windows.Forms.DataGridView dataGridCanjes;
+        private System.Windows.Forms.ErrorProvider errorProviderDNI;
     }
 }

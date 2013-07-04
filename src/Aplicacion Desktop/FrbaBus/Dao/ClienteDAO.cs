@@ -30,18 +30,8 @@ namespace FrbaBus.Dao
         { 
             BaseDeDatos db = BaseDeDatos.Instance;
             String sql;
-            /*
-            sql = "SELECT ISNULL(SUM(puntos), 0) FROM SENIOR_DEVELOPERS.V_ClientePasajeEncomienda WHERE fecha > DATEADD(YEAR, -1, GETDATE()) AND cliente_DNI = " + DNI;
-            int puntos = (int)db.executeScalar(sql);
-
-            sql = "SELECT ISNULL(SUM(P.puntosNecesarios * C.cantidad), 0) ";
-            sql += "FROM SENIOR_DEVELOPERS.Producto P INNER JOIN SENIOR_DEVELOPERS.Canje C ON P.ID = C.producto_ID "; 
-            sql += "WHERE C.cliente_DNI = "+ DNI +" ";
-            sql += "AND C.fecha > DATEADD(YEAR, -1, GETDATE())";
-            int canjes = (int)db.executeScalar(sql);
-            */
-
-            sql = "SELECT SUM(puntos) FROM SENIOR_DEVELOPERS.V_PuntosClientesALaFecha WHERE cliente_DNI = " + DNI;
+            
+            sql = "SELECT ISNULL(SUM(puntos), 0) FROM SENIOR_DEVELOPERS.V_PuntosClientesALaFecha WHERE cliente_DNI = " + DNI;
             int puntos = (int)db.executeScalar(sql);
             return puntos;
         }
