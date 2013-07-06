@@ -225,13 +225,16 @@ namespace FrbaBus.Dao
         {
             BaseDeDatos db = BaseDeDatos.Instance;
             String sql;
-
+            /*
             sql = "UPDATE SENIOR_DEVELOPERS.Micro ";
             sql += "SET ";
             sql += "bajaFueraServicio = 'Si', ";
             sql += "fechaFueraServicio = CONVERT(DATE, '" + fechaFuera.ToString("yyyy-MM-dd") + "'), ";
             sql += "fechaReinicioServicio = CONVERT(DATE, '" + fechaReinicio.ToString("yyyy-MM-dd") + "') ";
             sql += "WHERE patente = '"+patente+"'";
+            */
+
+            sql = "exec SENIOR_DEVELOPERS.SP_darBajaFueraServicio @patente = '" + patente + "', @fechaInicio = '" + fechaFuera.ToString("yyyy-MM-dd") + "', @fechaReinicio = '" + fechaReinicio.ToString("yyyy-MM-dd") + "'";
 
             db.executeNonQuery(sql);
         }

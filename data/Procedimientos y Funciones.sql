@@ -1,6 +1,8 @@
 /*Procedimientos y Funciones*/
 
 
+IF OBJECT_ID('SENIOR_DEVELOPERS.SP_darBajaFueraServicio') IS NOT NULL
+  DROP PROCEDURE SENIOR_DEVELOPERS.SP_darBajaFueraServicio
 IF OBJECT_ID('SENIOR_DEVELOPERS.FN_ListadoDestinosConMasPasajesCancelados') IS NOT NULL
   DROP FUNCTION SENIOR_DEVELOPERS.FN_ListadoDestinosConMasPasajesCancelados
 IF OBJECT_ID('SENIOR_DEVELOPERS.FN_ListadoDestinosConMicrosMasVacios') IS NOT NULL
@@ -1041,3 +1043,22 @@ end
 GO
 
 
+create procedure SENIOR_DEVELOPERS.SP_darBajaFueraServicio @patente nvarchar(255), @fechaInicio nvarchar(255), @fechaReinicio nvarchar(255) as
+begin
+
+	declare @dtFechaInicio date
+	declare @dtFechaReinicio date
+	
+	select @dtFechaInicio = CONVERT(DATE, @fechaInicio)
+	select @dtFechaReinicio = CONVERT(DATE, @fechaReinicio)
+	
+	
+	update SENIOR_DEVELOPERS.Micro 
+	set 
+		bajaFueraServicio = 'Si',
+		fechaFueraServicio = @dtFechaInicio,
+		fechaReinicioServicio = @dtFechaReinicio
+	where patente = @patente
+
+end
+GO

@@ -1,6 +1,6 @@
 Curso: K3013
 
-Nº grupo: 14  (Senior developers)
+Nº grupo: 14  (Senior Developers)
 
 Integrantes: 
 Gabriel Mazzei -  140765-0
