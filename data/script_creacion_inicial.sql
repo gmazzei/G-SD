@@ -167,6 +167,16 @@ GO
 
 /* Vistas especiales para Listados Estadisticos*/
 
+CREATE VIEW SENIOR_DEVELOPERS.V_ClientePuntos AS
+SELECT cliente_DNI, fecha, puntos
+FROM SENIOR_DEVELOPERS.V_ClientePasajeEncomienda
+UNION
+SELECT cliente_DNI, fecha,0 - (P.puntosNecesarios * C.cantidad) AS puntos
+FROM SENIOR_DEVELOPERS.Canje C INNER JOIN SENIOR_DEVELOPERS.Producto P ON P.ID = producto_ID
+GO
+
+
+/*
 CREATE VIEW SENIOR_DEVELOPERS.V_DestinosPasajes AS
 SELECT C.nombre AS Destino, RC.fecha AS Fecha
 FROM SENIOR_DEVELOPERS.Pasaje P
@@ -189,15 +199,6 @@ GROUP BY V.ID, C.nombre, V.fechaLlegada, M.patente, M.cantidadButacas
 GO
 
 
-CREATE VIEW SENIOR_DEVELOPERS.V_ClientePuntos AS
-SELECT cliente_DNI, fecha, puntos
-FROM SENIOR_DEVELOPERS.V_ClientePasajeEncomienda
-UNION
-SELECT cliente_DNI, fecha,0 - (P.puntosNecesarios * C.cantidad) AS puntos
-FROM SENIOR_DEVELOPERS.Canje C INNER JOIN SENIOR_DEVELOPERS.Producto P ON P.ID = producto_ID
-GO
-
-
 CREATE VIEW SENIOR_DEVELOPERS.V_DestinoPasajeCancelado AS
 SELECT C.nombre AS Destino, CA.fecha AS Fecha
 FROM SENIOR_DEVELOPERS.CancelacionPasaje CP
@@ -212,7 +213,7 @@ CREATE VIEW SENIOR_DEVELOPERS.V_MicrosDiasFueraDeServicio AS
 SELECT micro_patente AS Micro, fecha, DATEDIFF(DAY, fecha, fechaReinicio) AS 'Cantidad de dias fuera de servicio'
 FROM SENIOR_DEVELOPERS.RegistroMicroFueraServicio
 GO
-
+*/
 
 
 --Creacion de Claves primarias y foraneas
@@ -450,6 +451,54 @@ BEGIN
 end
 GO
 
+		
+create trigger SENIOR_DEVELOPERS.tr_deshabilitarRol on SENIOR_DEVELOPERS.Rol
+for update as --Se inhabilitan todos los usuario con este Rol
+begin
+	if ((select habilitado from inserted) = 'No')
+	begin
+		declare @rol_ID int
+		select @rol_ID = ID from inserted
+	
+		update SENIOR_DEVELOPERS.Usuario
+		set
+			habilitado = 'No'
+		where rol_ID = @rol_ID;
+	end
+end
+GO
+
+CREATE TRIGGER SENIOR_DEVELOPERS.tr_canjeProducto ON SENIOR_DEVELOPERS.Canje
+FOR INSERT AS --Se reduce el stock del producto
+BEGIN
+	DECLARE @producto_ID INT
+	DECLARE @cantidadComprada INT
+	
+	SELECT @producto_ID = producto_ID FROM inserted
+	SELECT @cantidadComprada = cantidad FROM inserted
+	
+	UPDATE SENIOR_DEVELOPERS.Producto
+	SET
+		stock -= @cantidadComprada
+	WHERE ID = @producto_ID
+END
+GO
+
+/*Si un micro pasa a estar fuera de servicio se guarda el rango de fechas*/
+create trigger tr_microFueraServicio on SENIOR_DEVELOPERS.Micro
+for update as
+begin
+	
+	insert into SENIOR_DEVELOPERS.RegistroMicroFueraServicio
+	(micro_patente, fecha, fechaReinicio)
+	select patente, fechaFueraServicio, fechaReinicioServicio from inserted
+	where fechaFueraServicio IS NOT NULL AND fechaReinicioServicio IS NOT NULL
+	AND fechaFueraServicio not in (select fecha from SENIOR_DEVELOPERS.RegistroMicroFueraServicio where micro_patente = patente)
+	
+end
+GO
+
+/*
 create trigger SENIOR_DEVELOPERS.tr_deshabilitarUsuario on SENIOR_DEVELOPERS.Usuario
 for update as --Si se equivoca 3 veces, es inhabilitado
 begin
@@ -484,52 +533,8 @@ begin
 	
 end
 GO
-		
-create trigger SENIOR_DEVELOPERS.tr_deshabilitarRol on SENIOR_DEVELOPERS.Rol
-for update as --Se inhabilitan todos los usuario con este Rol
-begin
-	if ((select habilitado from inserted) = 'No')
-	begin
-		declare @rol_ID int
-		select @rol_ID = ID from inserted
-	
-		update SENIOR_DEVELOPERS.Usuario
-		set
-			habilitado = 'No'
-		where rol_ID = @rol_ID;
-	end
-end
-GO
+*/
 
-CREATE TRIGGER SENIOR_DEVELOPERS.tr_canjeProducto ON SENIOR_DEVELOPERS.Canje
-FOR INSERT AS --Se reduce el stock del producto
-BEGIN
-	DECLARE @producto_ID INT
-	DECLARE @cantidadComprada INT
-	
-	SELECT @producto_ID = producto_ID FROM inserted
-	SELECT @cantidadComprada = cantidad FROM inserted
-	
-	UPDATE SENIOR_DEVELOPERS.Producto
-	SET
-		stock -= @cantidadComprada
-	WHERE ID = @producto_ID
-END
-GO
-
-/*Si un micro pasa a estar fuera de servicio*/
-create trigger tr_microFueraServicio on SENIOR_DEVELOPERS.Micro
-for update as
-begin
-	
-	insert into SENIOR_DEVELOPERS.RegistroMicroFueraServicio
-	(micro_patente, fecha, fechaReinicio)
-	select patente, fechaFueraServicio, fechaReinicioServicio from inserted
-	where fechaFueraServicio IS NOT NULL AND fechaReinicioServicio IS NOT NULL
-	AND fechaFueraServicio not in (select fecha from SENIOR_DEVELOPERS.RegistroMicroFueraServicio where micro_patente = patente)
-	
-end
-GO
 
 
 --Migracion de datos

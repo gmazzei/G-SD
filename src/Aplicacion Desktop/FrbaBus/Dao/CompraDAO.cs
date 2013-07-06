@@ -156,13 +156,16 @@ namespace FrbaBus.Dao
         {
             BaseDeDatos db = BaseDeDatos.Instance;
             String sql;
-
+            /*
             sql = "SELECT TOP 5 Destino, COUNT(*) AS 'Cantidad de pasajes comprados' ";
             sql += "FROM SENIOR_DEVELOPERS.V_DestinosPasajes ";
             sql += "WHERE YEAR(Fecha) = " + anio + " ";
             sql += "AND SENIOR_DEVELOPERS.FN_fechaEsDeSemestre(Fecha) = " + semestre + " ";
             sql += "GROUP BY Destino ";
             sql += "ORDER BY 'Cantidad de pasajes comprados' DESC";
+            */
+
+            sql = "select Destino, Cantidad from SENIOR_DEVELOPERS.FN_ListadoDestinosConMasPasajesComprados(" + anio + ", " + semestre + ")";
 
             DataTable tabla = db.obtenerComoTabla(sql);
 
@@ -170,18 +173,21 @@ namespace FrbaBus.Dao
             
         }
 
-        public DataTable getDestinosConMasMicrosVacios(int anio, int semestre)
+        public DataTable getDestinosConMicrosMasVacios(int anio, int semestre)
         {
             BaseDeDatos db = BaseDeDatos.Instance;
             String sql;
-
+            /*
             sql = "SELECT TOP 5 Destino, Fecha, Micro, [Porcentaje lleno] ";
             sql += "FROM SENIOR_DEVELOPERS.V_MicrosPorcentajeLleno ";
             sql += "WHERE ";
             sql += "YEAR(Fecha) = " + anio + " ";
             sql += "AND SENIOR_DEVELOPERS.FN_fechaEsDeSemestre(Fecha) = " + semestre + " ";
             sql += "ORDER BY [Porcentaje lleno] ASC";
-            
+            */
+
+            sql = "select Destino, Fecha, Micro, Porcentaje_Lleno from SENIOR_DEVELOPERS.FN_ListadoDestinosConMicrosMasVacios(" + anio + ", " + semestre + ")";
+
             DataTable tabla = db.obtenerComoTabla(sql);
 
             return tabla;
@@ -192,14 +198,16 @@ namespace FrbaBus.Dao
         {
             BaseDeDatos db = BaseDeDatos.Instance;
             String sql;
-
+            /*
             sql = "SELECT TOP 5 Destino, COUNT(*) AS 'Cantidad de pasajes cancelados' ";
             sql += "FROM SENIOR_DEVELOPERS.V_DestinoPasajeCancelado ";
             sql += "WHERE YEAR(Fecha) = " + anio + " ";
             sql += "AND SENIOR_DEVELOPERS.FN_fechaEsDeSemestre(Fecha) = " + semestre + " ";
             sql += "GROUP BY Destino ";
             sql += "ORDER BY 'Cantidad de pasajes cancelados' DESC";
-            
+            */
+            sql = "select Destino, Cantidad_de_pasajes_cancelados from SENIOR_DEVELOPERS.FN_ListadoDestinosConMasPasajesCancelados(" + anio + ", " + semestre + ")";
+
             DataTable tabla = db.obtenerComoTabla(sql);
 
             return tabla;

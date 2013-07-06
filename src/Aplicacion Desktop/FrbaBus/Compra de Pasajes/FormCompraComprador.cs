@@ -32,7 +32,7 @@ namespace FrbaBus.Compra_de_Pasajes
 
         private void FormCompraComprador_Load(object sender, EventArgs e)
         {
-
+            //Nada
         }
 
         private void cargarComponentes()
@@ -124,7 +124,7 @@ namespace FrbaBus.Compra_de_Pasajes
         }
 
 
-        private Boolean validarTarjeta()
+        private void validarTarjeta()
         {
             Boolean errores = false;
             Regex reg = new Regex(@"^[a-zA-Z0-9ñáéíóú]{1,30}$");
@@ -181,7 +181,11 @@ namespace FrbaBus.Compra_de_Pasajes
                 errores = true;
             }
 
-            return errores;
+            if (errores)
+            {
+                throw new SystemException("Debe corregir los errores marcados para continuar.");
+            }
+
         }
 
         private void botonFinalizar_Click(object sender, EventArgs e)
@@ -199,7 +203,7 @@ namespace FrbaBus.Compra_de_Pasajes
 
                 if (this.cb_FormaDePago.Text.Equals("Tarjeta"))
                 {
-                    Boolean erroresTarjeta = this.validarTarjeta();
+                    this.validarTarjeta();
                     Tarjeta tarjeta = this.armarTarjeta();
                     compraDAO.guardarDatosTarjeta(tarjeta);
                 }

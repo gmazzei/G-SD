@@ -35,10 +35,13 @@ namespace FrbaBus
             BaseDeDatos db = BaseDeDatos.Instance;
             Usuario usuario = null;
             string passwordHash = this.toSHA256(password);
-            
+            String sql;
+
+            /*
             String sql = "exec SENIOR_DEVELOPERS.SP_preLogin @username = '" + username + "', @password = '" + passwordHash + "'";
             db.executeNonQuery(sql);
-            
+            */
+
             sql = "SELECT username, password, intentosFallidos, habilitado, rol_ID ";
             sql += "FROM SENIOR_DEVELOPERS.Usuario ";
             sql += "WHERE username = '" + username + "' AND password = '" + passwordHash + "' ";

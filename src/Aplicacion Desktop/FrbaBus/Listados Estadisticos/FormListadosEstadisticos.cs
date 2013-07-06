@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using FrbaBus.Dao;
 using FrbaBus.Mensajes;
+using System.Text.RegularExpressions;
 
 namespace FrbaBus.Listados_Estadisticos
 {
@@ -61,7 +62,7 @@ namespace FrbaBus.Listados_Estadisticos
                 int anio = Convert.ToInt32(tb_Anio.Text);
                 int semestre = Convert.ToInt32(cb_Semestre.Text);
 
-                DataTable tabla = compraDAO.getDestinosConMasMicrosVacios(anio, semestre);
+                DataTable tabla = compraDAO.getDestinosConMicrosMasVacios(anio, semestre);
                 dataGrid.DataSource = tabla;
             }
             catch (Exception ex)
@@ -132,13 +133,13 @@ namespace FrbaBus.Listados_Estadisticos
 
         private void FormListadosEstadisticos_Load(object sender, EventArgs e)
         {
-
+            //Nada
         }
 
         private void validarEntrada()
         {
             Boolean errores = false;
-            long result;
+            Regex reg = new Regex(@"^[0-9]{1,4}$");
 
             this.errorProviderAnio.Clear();
             this.errorProviderSemestre.Clear();
@@ -148,7 +149,7 @@ namespace FrbaBus.Listados_Estadisticos
                 this.errorProviderAnio.SetError(this.tb_Anio, "Campo obligatorio");
                 errores = true;
             } 
-            else if (!Int64.TryParse(this.tb_Anio.Text, out result))
+            else if (!reg.IsMatch(this.tb_Anio.Text))
             {
                 this.errorProviderAnio.SetError(this.tb_Anio, "Debe ser un año");
                 errores = true;

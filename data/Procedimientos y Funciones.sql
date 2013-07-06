@@ -1,6 +1,12 @@
 /*Procedimientos y Funciones*/
 
 
+IF OBJECT_ID('SENIOR_DEVELOPERS.FN_ListadoDestinosConMasPasajesCancelados') IS NOT NULL
+  DROP FUNCTION SENIOR_DEVELOPERS.FN_ListadoDestinosConMasPasajesCancelados
+IF OBJECT_ID('SENIOR_DEVELOPERS.FN_ListadoDestinosConMicrosMasVacios') IS NOT NULL
+  DROP FUNCTION SENIOR_DEVELOPERS.FN_ListadoDestinosConMicrosMasVacios
+IF OBJECT_ID('SENIOR_DEVELOPERS.FN_ListadoDestinosConMasPasajesComprados') IS NOT NULL
+  DROP FUNCTION SENIOR_DEVELOPERS.FN_ListadoDestinosConMasPasajesComprados
 IF OBJECT_ID('SENIOR_DEVELOPERS.FN_ListadoMicrosFueraServicio') IS NOT NULL
   DROP FUNCTION SENIOR_DEVELOPERS.FN_ListadoMicrosFueraServicio
 IF OBJECT_ID('SENIOR_DEVELOPERS.SP_modificarRecorrido') IS NOT NULL
@@ -214,9 +220,9 @@ begin
 	begin
 	
 		insert into SENIOR_DEVELOPERS.Cliente
-		(DNI, nombre, apellido, telefono, mail, fechaNacimiento, esDiscapacitado, genero)
+		(DNI, nombre, apellido, direccion, telefono, mail, fechaNacimiento, esDiscapacitado, genero, puntos)
 		values
-		(@nuevoDNI, @nombre, @apellido, @telefono, @mail, @fechaNacimientoDatetime, @esDiscapacitado, @genero)
+		(@nuevoDNI, @nombre, @apellido, @direccion, @telefono, @mail, @fechaNacimientoDatetime, @esDiscapacitado, @genero, 0)
 		
 	end
 	else 
@@ -228,6 +234,7 @@ begin
 			nombre = @nombre,
 			apellido = @apellido,
 			telefono = @telefono,
+			direccion = @direccion,
 			mail = @mail,
 			fechaNacimiento = @fechaNacimientoDatetime,
 			esDiscapacitado = @esDiscapacitado,
@@ -405,7 +412,7 @@ begin
 		
 end
 GO
-
+/*
 create procedure SENIOR_DEVELOPERS.SP_preLogin @username nvarchar(255), @password nvarchar(255) as
 begin
 	
@@ -443,7 +450,7 @@ begin
 
 end
 GO
-
+*/
 create procedure SENIOR_DEVELOPERS.SP_generarViaje @recorridoID int, @microPatente varchar(255), @fechaSalida nvarchar(255), @fechaLlegadaEstimada nvarchar(255) as
 begin
 	
@@ -882,13 +889,13 @@ begin
 	
 	if(@semestre = 1)
 	begin
-		select @fechaLimiteInferior = CONVERT(date, CONVERT(char(4), @anio) + '-01-01')
-		select @fechaLimiteSuperior = CONVERT(date, CONVERT(char(4), @anio) + '-06-30')
+		select @fechaLimiteInferior = CONVERT(date, CONVERT(char(4), @anio - 1) + '-12-31')
+		select @fechaLimiteSuperior = CONVERT(date, CONVERT(char(4), @anio) + '-07-01')
 	end
 	else 
 	begin
-		select @fechaLimiteInferior = CONVERT(date, CONVERT(char(4), @anio) + '-07-01')
-		select @fechaLimiteSuperior = CONVERT(date, CONVERT(char(4), @anio) + '-12-31')
+		select @fechaLimiteInferior = CONVERT(date, CONVERT(char(4), @anio) + '-06-30')
+		select @fechaLimiteSuperior = CONVERT(date, CONVERT(char(4), @anio + 1) + '-01-01')
 	end
 	
 	
@@ -921,3 +928,116 @@ begin
 	
 end
 GO
+
+
+create function SENIOR_DEVELOPERS.FN_ListadoDestinosConMasPasajesComprados(@anio int, @semestre int) 
+returns @resultado table (Destino nvarchar(255), Cantidad int) as
+begin
+	
+	declare @fechaLimiteInferior date
+	declare @fechaLimiteSuperior date
+	
+	if(@semestre = 1)
+	begin
+		select @fechaLimiteInferior = CONVERT(date, CONVERT(char(4), @anio - 1) + '-12-31')
+		select @fechaLimiteSuperior = CONVERT(date, CONVERT(char(4), @anio) + '-07-01')
+	end
+	else 
+	begin
+		select @fechaLimiteInferior = CONVERT(date, CONVERT(char(4), @anio) + '-06-30')
+		select @fechaLimiteSuperior = CONVERT(date, CONVERT(char(4), @anio + 1) + '-01-01')
+	end
+	
+	insert into @resultado
+	(Destino, Cantidad)
+	select top 5 C.nombre, COUNT(*)
+	from SENIOR_DEVELOPERS.Pasaje P
+	inner join SENIOR_DEVELOPERS.RegistroCompra RC ON P.compra_NRO = RC.NRO 
+	inner join SENIOR_DEVELOPERS.Viaje V ON V.ID = P.viaje_ID
+	inner join SENIOR_DEVELOPERS.Recorrido R ON R.ID = V.recorrido_ID
+	inner join SENIOR_DEVELOPERS.Ciudad C ON C.ID = R.ciudadDestino_ID
+	where RC.fecha between @fechaLimiteInferior AND @fechaLimiteSuperior
+	group by C.nombre
+	order by COUNT(*) DESC
+	
+	
+	return
+	
+end
+GO
+
+create function SENIOR_DEVELOPERS.FN_ListadoDestinosConMicrosMasVacios(@anio int, @semestre int) 
+returns @resultado table (Destino nvarchar(255), Fecha date, Micro nvarchar(255), Porcentaje_Lleno decimal(5,2)) as
+begin
+	
+	declare @fechaLimiteInferior date
+	declare @fechaLimiteSuperior date
+	
+	if(@semestre = 1)
+	begin
+		select @fechaLimiteInferior = CONVERT(date, CONVERT(char(4), @anio - 1) + '-12-31')
+		select @fechaLimiteSuperior = CONVERT(date, CONVERT(char(4), @anio) + '-07-01')
+	end
+	else 
+	begin
+		select @fechaLimiteInferior = CONVERT(date, CONVERT(char(4), @anio) + '-06-30')
+		select @fechaLimiteSuperior = CONVERT(date, CONVERT(char(4), @anio + 1) + '-01-01')
+	end
+	
+	insert into @resultado
+	(Destino, Fecha, Micro, Porcentaje_Lleno)
+	select top 5 C.nombre, V.fechaLlegada, M.patente, CONVERT(decimal(5,2), COUNT(*))* 100/M.cantidadButacas AS Porcentaje
+	from SENIOR_DEVELOPERS.Pasaje P
+	inner join SENIOR_DEVELOPERS.RegistroCompra RC ON P.compra_NRO = RC.NRO 
+	inner join SENIOR_DEVELOPERS.Viaje V ON V.ID = P.viaje_ID
+	inner join SENIOR_DEVELOPERS.Micro M ON V.micro_patente = M.patente
+	inner join SENIOR_DEVELOPERS.Recorrido R ON R.ID = V.recorrido_ID
+	inner join SENIOR_DEVELOPERS.Ciudad C ON C.ID = R.ciudadDestino_ID
+	where fechaLlegada between @fechaLimiteInferior AND @fechaLimiteSuperior
+	group by V.ID, C.nombre, V.fechaLlegada, M.patente, M.cantidadButacas	
+	order by Porcentaje
+	
+	return
+	
+end
+GO
+
+
+create function SENIOR_DEVELOPERS.FN_ListadoDestinosConMasPasajesCancelados(@anio int, @semestre int) 
+returns @resultado table (Destino nvarchar(255), Cantidad_de_pasajes_cancelados int) as
+begin
+	
+	declare @fechaLimiteInferior date
+	declare @fechaLimiteSuperior date
+	
+	if(@semestre = 1)
+	begin
+		select @fechaLimiteInferior = CONVERT(date, CONVERT(char(4), @anio - 1) + '-12-31')
+		select @fechaLimiteSuperior = CONVERT(date, CONVERT(char(4), @anio) + '-07-01')
+	end
+	else 
+	begin
+		select @fechaLimiteInferior = CONVERT(date, CONVERT(char(4), @anio) + '-06-30')
+		select @fechaLimiteSuperior = CONVERT(date, CONVERT(char(4), @anio + 1) + '-01-01')
+	end
+	
+	
+	insert into @resultado
+	(Destino, Cantidad_de_pasajes_cancelados) 
+	select top 5 C.nombre AS Destino, COUNT(*) as Cantidad
+	from SENIOR_DEVELOPERS.CancelacionPasaje CP
+	inner join SENIOR_DEVELOPERS.Cancelacion CA ON CA.ID = CP.cancelacion_ID 
+	inner join SENIOR_DEVELOPERS.Viaje V ON V.ID = CP.viaje_ID
+	inner join SENIOR_DEVELOPERS.Recorrido R ON R.ID = V.recorrido_ID
+	inner join SENIOR_DEVELOPERS.Ciudad C ON C.ID = R.ciudadDestino_ID
+	where CA.fecha between @fechaLimiteInferior AND @fechaLimiteSuperior
+	group by C.nombre
+	order by Cantidad DESC
+	
+		
+	return
+	
+end
+GO
+
+
