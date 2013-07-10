@@ -996,7 +996,7 @@ begin
 	inner join SENIOR_DEVELOPERS.Recorrido R ON R.ID = V.recorrido_ID
 	inner join SENIOR_DEVELOPERS.Ciudad C ON C.ID = R.ciudadDestino_ID
 	where fechaLlegada between @fechaLimiteInferior AND @fechaLimiteSuperior
-	group by V.ID, C.nombre, V.fechaLlegada, M.patente, M.cantidadButacas	
+	group by V.ID, C.nombre, V.fechaLlegada, M.patente, M.cantidadButacas
 	order by Porcentaje
 	
 	return
